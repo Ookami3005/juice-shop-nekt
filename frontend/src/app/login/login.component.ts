@@ -40,7 +40,7 @@ const oauthProviderUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
 })
 
 export class LoginComponent implements OnInit {
-  public emailControl = new UntypedFormControl('', [Validators.required, Validators.email])
+  public emailControl = new UntypedFormControl('', [Validators.required])
 
   public passwordControl = new UntypedFormControl('', [Validators.required, Validators.minLength(1)])
 
