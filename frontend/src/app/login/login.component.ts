@@ -25,6 +25,9 @@ import { MatFormFieldModule, MatLabel, MatError, MatSuffix } from '@angular/mate
 
 import { MatCardModule } from '@angular/material/card'
 
+// import { blacklistValidator } from './blacklist.validator';
+// import { whitelistValidator } from './whitelist.validator';
+
 library.add(faKey, faEye, faEyeSlash, faGoogle)
 
 const oauthProviderUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -37,7 +40,7 @@ const oauthProviderUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
 })
 
 export class LoginComponent implements OnInit {
-  public emailControl = new UntypedFormControl('', [Validators.required])
+  public emailControl = new UntypedFormControl('', [Validators.required, Validators.email])
 
   public passwordControl = new UntypedFormControl('', [Validators.required, Validators.minLength(1)])
 
@@ -50,9 +53,9 @@ export class LoginComponent implements OnInit {
   public redirectUri: string = ''
   public testingUsername = 'testing@juice-sh.op'
   public testingPassword = 'IamUsedForTesting'
-  constructor (private readonly configurationService: ConfigurationService, private readonly userService: UserService, private readonly windowRefService: WindowRefService, private readonly cookieService: CookieService, private readonly router: Router, private readonly formSubmitService: FormSubmitService, private readonly basketService: BasketService, private readonly ngZone: NgZone) { }
+  constructor(private readonly configurationService: ConfigurationService, private readonly userService: UserService, private readonly windowRefService: WindowRefService, private readonly cookieService: CookieService, private readonly router: Router, private readonly formSubmitService: FormSubmitService, private readonly basketService: BasketService, private readonly ngZone: NgZone) { }
 
-  ngOnInit (): void {
+  ngOnInit(): void {
     const email = localStorage.getItem('email')
     if (email) {
       this.user = {}
@@ -84,10 +87,11 @@ export class LoginComponent implements OnInit {
     this.formSubmitService.attachEnterKeyHandler('login-form', 'loginButton', () => { this.login() })
   }
 
-  login () {
+  login() {
     this.user = {}
     this.user.email = this.emailControl.value
     this.user.password = this.passwordControl.value
+
     this.userService.login(this.user).subscribe({
       next: (authentication: any) => {
         localStorage.setItem('token', authentication.token)
@@ -122,7 +126,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  googleLogin () {
+  googleLogin() {
     this.windowRefService.nativeWindow.location.replace(`${oauthProviderUrl}?client_id=${this.clientId}&response_type=token&scope=email&redirect_uri=${this.redirectUri}`)
   }
 }
