@@ -25,7 +25,7 @@ import { MatFormFieldModule, MatLabel, MatError, MatSuffix } from '@angular/mate
 
 import { MatCardModule } from '@angular/material/card'
 
-import { blacklistValidator } from './blacklist.validator';
+// import { blacklistValidator } from './blacklist.validator';
 // import { whitelistValidator } from './whitelist.validator';
 
 library.add(faKey, faEye, faEyeSlash, faGoogle)
