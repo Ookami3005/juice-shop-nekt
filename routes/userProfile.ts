@@ -18,11 +18,11 @@ import * as utils from '../lib/utils'
 
 const entities = new Entities()
 
-function favicon () {
+function favicon() {
   return utils.extractFilename(config.get('application.favicon'))
 }
 
-export function getUserProfile () {
+export function getUserProfile() {
   return async (req: Request, res: Response, next: NextFunction) => {
     let template: string
     try {

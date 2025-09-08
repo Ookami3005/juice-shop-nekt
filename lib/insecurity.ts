@@ -51,10 +51,11 @@ export const cutOffPoisonNullByte = (str: string) => {
   return str
 }
 
-export const isAuthorized = () => expressJwt(({ secret: publicKey }) as any)
-export const denyAll = () => expressJwt({ secret: '' + Math.random() } as any)
+export const isAuthorized = () => expressJwt(({ secret: publicKey, algorithms: ["RS256"] }) as any)
+export const denyAll = () => expressJwt({ secret: '' + Math.random(), algorithms: ["RS256"] } as any)
 export const authorize = (user = {}) => jwt.sign(user, privateKey, { expiresIn: '6h', algorithm: 'RS256' })
 export const verify = (token: string) => token ? (jws.verify as ((token: string, secret: string) => boolean))(token, publicKey) : false
+// export const verify = (token: string) => token ? (() => { try { jwt.verify(token, publicKey, { algorithms: ['RS256'] }); return true } catch { return false } })() : false
 export const decode = (token: string) => { return jws.decode(token)?.payload }
 
 export const sanitizeHtml = (html: string) => sanitizeHtmlLib(html)
@@ -72,21 +73,21 @@ export const sanitizeSecure = (html: string): string => {
 export const authenticatedUsers: IAuthenticatedUsers = {
   tokenMap: {},
   idMap: {},
-  put: function (token: string, user: ResponseWithUser) {
+  put: function(token: string, user: ResponseWithUser) {
     this.tokenMap[token] = user
     this.idMap[user.data.id] = token
   },
-  get: function (token?: string) {
+  get: function(token?: string) {
     return token ? this.tokenMap[utils.unquote(token)] : undefined
   },
-  tokenOf: function (user: UserModel) {
+  tokenOf: function(user: UserModel) {
     return user ? this.idMap[user.id] : undefined
   },
-  from: function (req: Request) {
+  from: function(req: Request) {
     const token = utils.jwtFrom(req)
     return token ? this.get(token) : undefined
   },
-  updateFrom: function (req: Request, user: ResponseWithUser) {
+  updateFrom: function(req: Request, user: ResponseWithUser) {
     const token = utils.jwtFrom(req)
     this.put(token, user)
   }
@@ -116,7 +117,7 @@ export const discountFromCoupon = (coupon?: string) => {
   }
 }
 
-function hasValidFormat (coupon: string) {
+function hasValidFormat(coupon: string) {
   return coupon.match(/(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[0-9]{2}-[0-9]{2}/)
 }
 
@@ -185,17 +186,17 @@ export const appendUserId = () => {
   }
 }
 
-export const updateAuthenticatedUsers = () => (req: Request, res: Response, next: NextFunction) => {
+export const updateAuthenticatedUsers = () => async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token || utils.jwtFrom(req)
   if (token) {
-    jwt.verify(token, publicKey, (err: Error | null, decoded: any) => {
-      if (err === null) {
-        if (authenticatedUsers.get(token) === undefined) {
-          authenticatedUsers.put(token, decoded)
-          res.cookie('token', token)
-        }
+    try {
+      const decoded: any = jwt.verify(token, publicKey, { algorithms: ["RS256"] })
+      if (authenticatedUsers.get(token) === undefined) {
+        authenticatedUsers.put(token, decoded)
+        res.cookie('token', token)
       }
-    })
+    } catch (err) {
+    }
   }
   next()
 }

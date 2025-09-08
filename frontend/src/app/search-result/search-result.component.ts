@@ -28,8 +28,7 @@ import { MatTooltip } from '@angular/material/tooltip'
 import { MatCardModule, MatCardImage, MatCardTitle, MatCardContent } from '@angular/material/card'
 import { MatGridList, MatGridTile } from '@angular/material/grid-list'
 import { AsyncPipe } from '@angular/common'
-
-import DOMPurify from 'dompurify'
+// import DOMPurify from 'dompurify'
 
 library.add(faEye, faCartPlus)
 
