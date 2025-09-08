@@ -186,17 +186,17 @@ export const appendUserId = () => {
   }
 }
 
-export const updateAuthenticatedUsers = () => async (req: Request, res: Response, next: NextFunction) => {
+export const updateAuthenticatedUsers = () => (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token || utils.jwtFrom(req)
   if (token) {
-    try {
-      const decoded: any = jwt.verify(token, publicKey, { algorithms: ["RS256"] })
-      if (authenticatedUsers.get(token) === undefined) {
-        authenticatedUsers.put(token, decoded)
-        res.cookie('token', token)
+    jwt.verify(token, publicKey, (err: Error | null, decoded: any) => {
+      if (err === null) {
+        if (authenticatedUsers.get(token) === undefined) {
+          authenticatedUsers.put(token, decoded)
+          res.cookie('token', token)
+        }
       }
-    } catch (err) {
-    }
+    })
   }
   next()
 }
